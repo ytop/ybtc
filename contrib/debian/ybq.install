@@ -1,0 +1,6 @@
+usr/local/bin/ybq usr/bin
+share/pixmaps/ybtc32.xpm usr/share/pixmaps
+share/pixmaps/ybtc16.xpm usr/share/pixmaps
+share/pixmaps/ybtc128.png usr/share/pixmaps
+debian/ybq.desktop usr/share/applications
+debian/ybq.protocol usr/share/kde4/services/

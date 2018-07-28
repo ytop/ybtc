@@ -1,0 +1,81 @@
+policy_module(ybtc, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type ybtc_t;
+type ybtc_exec_t;
+init_daemon_domain(ybtc_t, ybtc_exec_t)
+
+permissive ybtc_t;
+
+type ybtc_initrc_exec_t;
+init_script_file(ybtc_initrc_exec_t)
+
+type ybtc_conf_t;
+files_type(ybtc_conf_t)
+
+type ybtc_var_lib_t;
+files_type(ybtc_var_lib_t)
+
+type ybtc_var_run_t;
+files_type(ybtc_var_run_t)
+
+type ybtc_port_t;
+corenet_port(ybtc_port_t)
+
+########################################
+#
+# ybtc local policy
+#
+allow ybtc_t self:process { fork };
+
+allow ybtc_t self:fifo_file rw_fifo_file_perms;
+allow ybtc_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(ybtc_t, ybtc_conf_t, ybtc_conf_t)
+manage_files_pattern(ybtc_t, ybtc_conf_t, ybtc_conf_t)
+
+manage_dirs_pattern(ybtc_t, ybtc_var_lib_t, ybtc_var_lib_t)
+manage_files_pattern(ybtc_t, ybtc_var_lib_t, ybtc_var_lib_t)
+files_var_lib_filetrans(ybtc_t, ybtc_var_lib_t, { dir file })
+
+manage_dirs_pattern(ybtc_t, ybtc_var_run_t, ybtc_var_run_t)
+manage_files_pattern(ybtc_t, ybtc_var_run_t, ybtc_var_run_t)
+
+sysnet_dns_name_resolve(ybtc_t)
+corenet_all_recvfrom_unlabeled(ybtc_t)
+
+allow ybtc_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(ybtc_t)
+corenet_tcp_sendrecv_generic_node(ybtc_t)
+corenet_tcp_sendrecv_all_ports(ybtc_t)
+corenet_tcp_bind_generic_node(ybtc_t)
+
+gen_require(`
+    type ybtc_port_t;
+')
+allow ybtc_t ybtc_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type ybtc_port_t;
+')
+allow ybtc_t ybtc_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(ybtc_t)
+
+files_read_etc_files(ybtc_t)
+
+miscfiles_read_localization(ybtc_t)
+
+sysnet_dns_name_resolve(ybtc_t)
+
+allow ybtc_t ybtc_exec_t:file execute_no_trans;
+allow ybtc_t self:process setsched;
+corecmd_exec_ls(ybtc_t)
+corenet_tcp_connect_http_port(ybtc_t)
+dev_read_urand(ybtc_t)
+fs_getattr_xattr_fs(ybtc_t)
+kernel_read_system_state(ybtc_t)

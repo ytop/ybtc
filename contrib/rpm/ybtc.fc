@@ -1,0 +1,8 @@
+/usr/bin/ybc		--	gen_context(system_u:object_r:ybtc_exec_t,s0)
+/usr/sbin/ybd		--	gen_context(system_u:object_r:ybtc_exec_t,s0)
+/usr/lib(64)?/ybtc/ybd		--	gen_context(system_u:object_r:ybtc_exec_t,s0)
+
+/etc/ybtc(/.*)?		gen_context(system_u:object_r:ybtc_conf_t,s0)
+/var/lib/ybtc(/.*)?		gen_context(system_u:object_r:ybtc_var_lib_t,s0)
+
+(/var)?/run/ybd(/.*)?   gen_context(system_u:object_r:ybtc_var_run_t,s0)

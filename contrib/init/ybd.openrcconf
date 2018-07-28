@@ -1,0 +1,33 @@
+# /etc/conf.d/ybd: config file for /etc/init.d/ybd
+
+# Config file location
+#YBTCD_CONFIGFILE="/etc/ybtc/ybtc.conf"
+
+# What directory to write pidfile to?  (created and owned by $YBTCD_USER)
+#YBTCD_PIDDIR="/var/run/ybd"
+
+# What filename to give the pidfile
+#YBTCD_PIDFILE="${YBTCD_PIDDIR}/ybd.pid"
+
+# Where to write ybd data (be mindful that the blockchain is large)
+#YBTCD_DATADIR="/var/lib/ybd"
+
+# User and group to own ybd process
+#YBTCD_USER="ybtc"
+#YBTCD_GROUP="ybtc"
+
+# Path to ybd executable
+#YBTCD_BIN="/usr/bin/ybd"
+
+# Nice value to run ybd under
+#YBTCD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#YBTCD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for ybd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+YBTCD_SIGTERM_TIMEOUT=60

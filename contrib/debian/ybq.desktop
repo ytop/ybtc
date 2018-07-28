@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Ybtc Core
+Comment=Connect to the Ybtc P2P Network
+Comment[de]=Verbinde mit dem Ybtc peer-to-peer Netzwerk
+Comment[fr]=Ybtc, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Ybtc, eşten eşe kriptografik sanal para birimi
+Exec=ybq %u
+Terminal=false
+Type=Application
+Icon=ybtc128
+MimeType=x-scheme-handler/ybtc;
+Categories=Office;Finance;

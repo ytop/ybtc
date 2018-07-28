@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  ybd The ybtc core server.
+#
+#
+# chkconfig: 345 80 20
+# description: ybd
+# processname: ybd
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/ybd, see below
+if [ -f /etc/sysconfig/ybd ]; then
+        . /etc/sysconfig/ybd
+fi
+
+RETVAL=0
+
+prog=ybd
+# you can override the lockfile via YBTCD_LOCKFILE in /etc/sysconfig/ybd
+lockfile=${YBTCD_LOCKFILE-/var/lock/subsys/ybd}
+
+# ybd defaults to /usr/bin/ybd, override with YBTCD_BIN
+ybd=${YBTCD_BIN-/usr/bin/ybd}
+
+# ybd opts default to -disablewallet, override with YBTCD_OPTS
+ybd_opts=${YBTCD_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $ybd $ybd_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,1 @@
+BIT_ROOT/src/ybc -regtest -rpcuser=ybtcrpc -rpcpassword=P0 -rpcconnect=localhost:PORT_RPC CLIENTCOMMAND PARAMLIST 

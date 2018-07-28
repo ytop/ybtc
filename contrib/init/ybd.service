@@ -1,0 +1,22 @@
+[Unit]
+Description=Ybtc's distributed currency daemon
+After=network.target
+
+[Service]
+User=ybtc
+Group=ybtc
+
+Type=forking
+PIDFile=/var/lib/ybd/ybd.pid
+ExecStart=/usr/bin/ybd -daemon -pid=/var/lib/ybd/ybd.pid \
+-conf=/etc/ybtc/ybtc.conf -datadir=/var/lib/ybd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
