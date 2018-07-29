@@ -13,6 +13,9 @@ Ybtc supports all bitcoin functionality. Besides Ybtc is able to run  Ethereum
 smart contract  with some limititions.
 
 
+Install
+----------------
+See [INSTALL.md](INSTALL.md) for more
 
 License
 -------
