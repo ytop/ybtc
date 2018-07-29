@@ -45,15 +45,15 @@
 #include <boost/functional/hash.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/optional.hpp>
-#include <boost/random/random_device.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/throw_exception.hpp>
 #include <boost/tuple/tuple.hpp>
 
+
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
+#include <random>
 
 namespace ldb = leveldb;
 namespace sc
@@ -356,7 +356,7 @@ static const bytes NullBytes;
 static const std::map<u256, u256> EmptyMapU256U256;
 
 
-extern boost::random_device s_fixedHashEngine;
+extern std::random_device s_fixedHashEngine;
 
 template <unsigned N>
 class FixedHash
@@ -538,7 +538,7 @@ public:
     void randomize(Engine& _eng)
     {
         for (auto& i : m_data)
-            i = (uint8_t)boost::random::uniform_int_distribution<uint16_t>(0, 255)(_eng);
+            i = (uint8_t)std::uniform_int_distribution<uint16_t>(0, 255)(_eng);
     }
 
     /// @returns a random valued object.

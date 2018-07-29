@@ -3,7 +3,7 @@
 namespace sc
 {
 // ============= misc ==============
-boost::random_device s_fixedHashEngine;
+std::random_device s_fixedHashEngine;
 
 
 /*** FIPS202 SHAKE VOFs ***/

@@ -145,7 +145,7 @@ void State::clearCacheIfTooLarge() const
     // TODO: Find a good magic number
     while (m_unchangedCacheEntries.size() > 1000) {
         // Remove a random element
-        size_t const randomIndex = boost::random::uniform_int_distribution<size_t>(0, m_unchangedCacheEntries.size() - 1)(s_fixedHashEngine);
+        size_t const randomIndex = std::uniform_int_distribution<size_t>(0, m_unchangedCacheEntries.size() - 1)(s_fixedHashEngine);
 
         Address const addr = m_unchangedCacheEntries[randomIndex];
         std::swap(m_unchangedCacheEntries[randomIndex], m_unchangedCacheEntries.back());
