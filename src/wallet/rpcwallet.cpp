@@ -497,6 +497,17 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
 
 // ========= CASINO ======================
 
+bool base58toVMAddress(std::string& strAddr, std::vector<unsigned char>& contractAddress) 
+{
+    CYbtcAddress address(strAddr);
+    if (!address.IsValid())
+        return false;
+
+    contractAddress = ToByteVector(boost::get<CKeyID>(address.Get()));
+
+    return true;
+}
+
 UniValue getcasinoaddress(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 0)
@@ -506,8 +517,17 @@ UniValue getcasinoaddress(const JSONRPCRequest& request)
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
     LOCK2(cs_main, pwallet->cs_wallet);
 
+    uint160 u(minerAddress);
+
+    CYbtcAddress btcAddress;
+    CKeyID keyid(u);
+    btcAddress.Set(keyid);
+
+    if (!btcAddress.IsValid())
+        return false;
+
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("casinoaddress", HexStr(minerAddress)));
+    result.push_back(Pair("casinoaddress", btcAddress.ToString()));
 
     return result;
 }
@@ -525,27 +545,15 @@ UniValue setcasinoaddress(const JSONRPCRequest& request)
     CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
     LOCK2(cs_main, pwallet->cs_wallet);
 
-    CYbtcAddress address(strAddr);
-    if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Incorrect address");;
-    minerAddress = ToByteVector(boost::get<CKeyID>(address.Get()));
+    if (!base58toVMAddress(strAddr, minerAddress))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Incorrect address");
+
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("casinoaddress", HexStr(minerAddress)));
+    result.push_back(Pair("casinoaddress", strAddr));
 
     return result;
 }
 // ========= Smart Contracct ======================
-
-bool base58toVMAddress(std::string& strAddr, std::vector<unsigned char>& contractAddress) 
-{
-    CYbtcAddress address(strAddr);
-    if (!address.IsValid())
-        return false;
-
-    contractAddress = ToByteVector(boost::get<CKeyID>(address.Get()));
-
-    return true;
-}
 
 UniValue getvmaddress(const JSONRPCRequest& request)
 {
