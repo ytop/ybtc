@@ -273,8 +273,6 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
     CScript scriptPubKey;
 
     // Create casino contract
-    CWallet* const pwallet = ::vpwallets[0];
-    LOCK(pwallet->cs_wallet);
 
     if (nHeight == 1) {
         scriptPubKey = CScript() << minerAddress << CScriptNum(60000000) << CScriptNum(25) 
