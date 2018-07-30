@@ -273,6 +273,9 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
     CScript scriptPubKey;
 
     // Create casino contract
+    CWallet* const pwallet = ::vpwallets[0];
+    LOCK(pwallet->cs_wallet);
+
     if (nHeight == 1) {
         scriptPubKey = CScript() << ParseHex(minerAddress) << CScriptNum(60000000) << CScriptNum(25) 
             << ParseHex(GENESIS_CONTRACT_CODE) << ParseHex(GENESIS_CONTRACT_ADDRESS_ETH) << OP_CREATE;
@@ -648,12 +651,12 @@ static void getMinerAddress()
     char myAccount[9];
     GenerateRandom8Char(myAccount);
 
-    LOCK(cs_main);
     for (CWalletRef pwallet : ::vpwallets) {
         LogPrintf("wallet is %s\n", pwallet->GetName());
     }
 
     CWallet* const pwallet = ::vpwallets[0];
+    LOCK2(cs_main, pwallet->cs_wallet);
     std::set<CTxDestination> setAddress = pwallet->GetAccountAddresses(std::string(myAccount));
     CPubKey pubKey;
     auto strAccount = std::string(myAccount);

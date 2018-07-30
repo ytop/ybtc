@@ -45,11 +45,11 @@ bool SmartContract::ParseStack(std::vector<std::vector<unsigned char>>& stack)
 bool SmartContract::TxContractExec(const CTransaction& tx, sc::u256& refundGasAmount, std::vector<CTxOut>& vRefundGasFee, std::vector<unsigned char>& output)
 {
     for (const auto& vout : tx.vout) {
-        std::vector<std::vector<unsigned char>> stack;
-        EvalScript(stack, vout.scriptPubKey, SCRIPT_EXEC_BYTE_CODE, BaseSignatureChecker(), SIGVERSION_BASE, nullptr);
-        sc::Transaction scTx;
 
         if (vout.scriptPubKey.HasOpCreate() || vout.scriptPubKey.HasOpCall()) {
+            std::vector<std::vector<unsigned char>> stack;
+            EvalScript(stack, vout.scriptPubKey, SCRIPT_EXEC_BYTE_CODE, BaseSignatureChecker(), SIGVERSION_BASE, nullptr);
+            sc::Transaction scTx;
             flag = vout.scriptPubKey.HasOpCreate() ? ISCREATE : ISMESSAGECALL;
             // parse stack
             if (!ParseStack(stack)) {

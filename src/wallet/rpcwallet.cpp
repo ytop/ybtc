@@ -503,6 +503,9 @@ UniValue getcasinoaddress(const JSONRPCRequest& request)
         throw std::runtime_error(
             "getcasinoaddress \n"  );
 
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    LOCK2(cs_main, pwallet->cs_wallet);
+
     UniValue result(UniValue::VOBJ);
     result.push_back(Pair("casinoaddress", minerAddress));
 
@@ -518,6 +521,9 @@ UniValue setcasinoaddress(const JSONRPCRequest& request)
             "1. \"casinoaddress\"          (string, required) The casino address\n");
 
     std::string strAddr = request.params[0].get_str();
+
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    LOCK2(cs_main, pwallet->cs_wallet);
 
     CYbtcAddress address(strAddr);
     if (!address.IsValid())
