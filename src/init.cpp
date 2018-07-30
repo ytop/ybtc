@@ -1439,7 +1439,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                 delete pblocktree;
                 delete pState.release();
 
-                minerAddress = "NotApplicable";
                 pblocktree = new CBlockTreeDB(nBlockTreeDBCache, false, fReset);
 
                 if (fReset) {

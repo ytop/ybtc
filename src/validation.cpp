@@ -92,7 +92,7 @@ CTxMemPool mempool(&feeEstimator);
 static void CheckBlockIndex(const Consensus::Params& consensusParams);
 
 // CASINO miner address
-std::string minerAddress = "miS9vC899fzcdYNNqzmHtS83pJkphxAvYZ";
+std::vector<unsigned char> minerAddress;
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
@@ -4580,9 +4580,7 @@ bool CallContract(sc::Address scAddr, std::vector<unsigned char> opcode, std::ve
         sc::Transaction scTx;
         //std::vector<sc::byte>  data(opcode);
         scTx = std::move(sc::Transaction(false, 0, 25, 25000000, scAddr, opcode));
-        CYbtcAddress senderAddress(minerAddress);
-        auto vmSenderAddress = ToByteVector(boost::get<CKeyID>(senderAddress.Get()));
-        scTx.forceSender(sc::h160(vmSenderAddress));
+        scTx.forceSender(sc::h160(minerAddress));
         auto result = pState->execute(scTx);
         *output = result.output;
     } catch (...) {

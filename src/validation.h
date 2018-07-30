@@ -176,7 +176,7 @@ struct BlockHasher
 };
 
 // CASINO miner address
-extern std::string minerAddress;
+extern std::vector<unsigned char> minerAddress;
 const std::string str60zero="000000000000000000000000000000000000000000000000000000000000";
 const std::string str64zero="0000000000000000000000000000000000000000000000000000000000000000";
 

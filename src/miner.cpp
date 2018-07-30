@@ -277,7 +277,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
     LOCK(pwallet->cs_wallet);
 
     if (nHeight == 1) {
-        scriptPubKey = CScript() << ParseHex(minerAddress) << CScriptNum(60000000) << CScriptNum(25) 
+        scriptPubKey = CScript() << minerAddress << CScriptNum(60000000) << CScriptNum(25) 
             << ParseHex(GENESIS_CONTRACT_CODE) << ParseHex(GENESIS_CONTRACT_ADDRESS_ETH) << OP_CREATE;
         hasCasino = true;
     }
@@ -322,7 +322,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
 
         LogPrintf("CASINOMINER ---  set winner next phase %s  \n\n", datahex);
         
-        scriptPubKey = CScript() << CScriptNum(0) << ParseHex(minerAddress) << CScriptNum(60000000) 
+        scriptPubKey = CScript() << CScriptNum(0) << minerAddress << CScriptNum(60000000) 
             << CScriptNum(25) << ParseHex(datahex) << ParseHex(GENESIS_CONTRACT_ADDRESS_ETH) << OP_CALL;
         hasCasino = true;
     }
@@ -663,8 +663,8 @@ static void getMinerAddress()
     if (!pwallet->GetAccountPubkey(pubKey, strAccount)) {
         //TODO-J
     }
-    minerAddress = CYbtcAddress(pubKey.GetID()).ToString();
-    // minerAddressEth = HexStr(boost::get<CKeyID>(CYbtcAddress(pubKey.GetID()).Get()));
+    auto address = CYbtcAddress(pubKey.GetID());
+    minerAddress = ToByteVector(boost::get<CKeyID>(address.Get()));
 }
 
 static uint32_t IsActiveMiner(int currentPhase)
@@ -722,7 +722,7 @@ void static YbtcMiner(const CChainParams& chainparams)
     // Wait for other processes ready by sleeping
     std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
     getMinerAddress();
-    LogPrintf("CASINOMINER --- initial miner address is %s\n", minerAddress);
+    LogPrintf("CASINOMINER --- initial miner address is %s\n", HexStr(minerAddress));
 
     try {
         // Throw an error if no script was provided.  This can happen

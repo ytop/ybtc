@@ -507,7 +507,7 @@ UniValue getcasinoaddress(const JSONRPCRequest& request)
     LOCK2(cs_main, pwallet->cs_wallet);
 
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("casinoaddress", minerAddress));
+    result.push_back(Pair("casinoaddress", HexStr(minerAddress)));
 
     return result;
 }
@@ -528,9 +528,9 @@ UniValue setcasinoaddress(const JSONRPCRequest& request)
     CYbtcAddress address(strAddr);
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Incorrect address");;
-    minerAddress = strAddr;
+    minerAddress = ToByteVector(boost::get<CKeyID>(address.Get()));
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("casinoaddress", minerAddress));
+    result.push_back(Pair("casinoaddress", HexStr(minerAddress)));
 
     return result;
 }
