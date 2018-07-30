@@ -759,7 +759,7 @@ void static YbtcMiner(const CChainParams& chainparams)
             } else {
                 int64_t nTimeEnd = GetTimeMicros();
                 int64_t nTimeCheck = nTimeEnd - nTimeStart;
-                if (nTimeCheck * 0.000001 > 2 * CHAIN_BLOCK_INTERVAL * whenJumpAbnormal(currentPhase, currentIndex, lastWinPhase, lastWinIndex)) {
+                if (nTimeCheck * 0.000001 > 4 * CHAIN_BLOCK_INTERVAL * whenJumpAbnormal(currentPhase, currentIndex, lastWinPhase, lastWinIndex)) {
                     abnormalSkip = true;
                 }
             }
