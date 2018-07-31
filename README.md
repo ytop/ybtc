@@ -5,12 +5,16 @@ Ybtc Core
 What is Ybtc?
 ----------------
 
-Ybtc is an experimental digital currency that enables instant payments to
-anyone, anywhere in the world. Ybtc replaces bitcoin consensus portocol	POW with 
-CASINO, which is controlled by a genesis contract.
+Welcome to the Ybtc source code repository! This software enables Casino Consensus Protocol (See [CASINO.md](CASINO.md) for more) on
+bitcone backbone and deploy the safer smart contract.
 
-Ybtc supports all bitcoin functionality. Besides Ybtc is able to run  Ethereum
-smart contract  with some limititions.
+Some of the groundbreaking features of Ybtc include:
+
+1. Casino Consensus Protocol
+2. Low Latency Block confirmation (3 seconds)
+3. Bitcoin compatible
+4. Safe Smart Conatract powered by Ethereum Virtua Machine
+
 
 
 Install
