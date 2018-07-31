@@ -21,18 +21,18 @@ View debug.log
 ---------------------
 
 ```bash
-tail -f /tmp/ybtc/1/debug.log # ctrl+c to quit
-tail -f /tmp/ybtc/2/debug.log # ctrl+c to quit
-tail -f /tmp/ybtc/3/debug.log # ctrl+c to quit
+tail -f /tmp/ybtc/1/testnet3/debug.log # ctrl+c to quit
+tail -f /tmp/ybtc/2/testnet3/debug.log # ctrl+c to quit
+tail -f /tmp/ybtc/3/testnet3/debug.log # ctrl+c to quit
 ```
 
 Check Casino Protocol activity
 ---------------------
 
 ```bash
-grep CASINO /tmp/ybtc/1/debug.log
-grep CASINO /tmp/ybtc/2/debug.log
-grep CASINO /tmp/ybtc/3/debug.log
+grep CASINO /tmp/ybtc/1/testnet3/debug.log
+grep CASINO /tmp/ybtc/2/testnet3/debug.log
+grep CASINO /tmp/ybtc/3/testnet3/debug.log
 ```
 
 
