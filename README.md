@@ -17,6 +17,10 @@ Install
 ----------------
 See [INSTALL.md](INSTALL.md) for more
 
+Getting Started
+----------------
+See [GETTINGSTARTED.md](GETTINGSTARTED.md) for more
+
 License
 -------
 
