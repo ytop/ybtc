@@ -1637,7 +1637,7 @@ static int64_t nTimeTotal = 0;
 
 static bool CheckContractRefundFee(const CBlock& block, std::vector<CTxOut>& vRefundGasFee)
 {
-    return true; //jyan
+    return true; //TODO-J
     const CTransaction& vtxCoinBase = *(block.vtx[0]);
     auto voutSize = vtxCoinBase.vout.size();
     auto vRefundSize = vRefundGasFee.size();
@@ -1867,7 +1867,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
                 return error("ConnectBlock(): CheckInputs on %s failed with %s",
                     tx.GetHash().ToString(), FormatStateMessage(state));
 
-            if (!tx.HasCreateOrCall()) // skip smart contract script check by jyan
+            if (!tx.HasCreateOrCall()) // skip smart contract script check by TODO-J
                 control.Add(vChecks);
         }
 

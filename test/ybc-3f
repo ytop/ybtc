@@ -1,0 +1,3 @@
+#set -x 
+
+../src/ybc -rpcuser=ybtc -rpcpassword=ybtc -rpcport=8883 sendtocontract 13vCd93ALeZMrRtm8Rnv4WuixKA7opUWV2 538e0759 ${@:1}

@@ -177,7 +177,7 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
                     uint64_t val = CScriptNum::vch_to_uint64(vch1);
 
                     if (val > 40000000 / 2) { //DEFAULT_BLOCK_GAS_LIMIT_DGP
-                        // jyan don't allow transactions that use more than 1/2 block of gas to be broadcast on the mempool
+                        // TODO-J don't allow transactions that use more than 1/2 block of gas to be broadcast on the mempool
                         return false;
                     }
 
