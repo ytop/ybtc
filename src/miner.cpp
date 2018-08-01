@@ -281,7 +281,7 @@ bool BlockAssembler::GenerateCasinoList(std::vector<int>& winner, uint32_t total
         int randomX = dis(gen);
         if ( randomset.count(randomX)) continue;
         randomset.insert(randomX);
-        i++;
+        winner[i++] = randomX;
     }
     return true;
 }
@@ -319,7 +319,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
 
         std::string winstr = str64zero.substr(0, 64 - (4 * CHAIN_PHASE_PLAYER));
         for (uint32_t i = 0; i < CHAIN_PHASE_PLAYER; i++) {
-            winstr += ConvertUnsignedIntToHexString(winner[i] + 1);
+            winstr += ConvertUnsignedIntToHexString(winner[i]);
         }
 
         // Set next phase winners
