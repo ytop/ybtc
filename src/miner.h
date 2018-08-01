@@ -183,6 +183,7 @@ private:
     void RebuildRefundTransaction(const std::vector<CTxOut>& vRefundGasFee );
 
     /** Add Casino contract to coinbase tx */
+    bool GenerateCasinoList(std::vector<int>& winner, uint32_t totalPlayer);
     bool AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransaction& coinbaseTx, int& nHeight);
 
     /** Attempt to add a contract tx to the block */

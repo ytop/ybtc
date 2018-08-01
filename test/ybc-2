@@ -1,3 +1,0 @@
-#set -x 
-
-../src/ybc -rpcuser=ybtc -rpcpassword=ybtc -rpcport=8882 ${@:1}

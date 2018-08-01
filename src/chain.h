@@ -27,8 +27,8 @@ static const uint32_t CHAIN_PHASE_SIZE = 8;
 static const uint32_t CHAIN_PHASE_PLAYER = 2;
 static const uint32_t CHAIN_BLOCK_INTERVAL = 2;
 
-static const std::string GENESIS_CONTRACT_ADDRESS_BTC="13vCd93ALeZMrRtm8Rnv4WuixKA7opUWV2";
-// testnet static const std::string GENESIS_CONTRACT_ADDRESS_BTC="miS9vC899fzcdYNNqzmHtS83pJkphxAvYZ";
+// static const std::string GENESIS_CONTRACT_ADDRESS_BTC="13vCd93ALeZMrRtm8Rnv4WuixKA7opUWV2";
+static const std::string GENESIS_CONTRACT_ADDRESS_BTC="miS9vC899fzcdYNNqzmHtS83pJkphxAvYZ";
 static const std::string GENESIS_CONTRACT_ADDRESS_ETH="1fffffffffffffffffffffffffffffffffffffff";
 
 

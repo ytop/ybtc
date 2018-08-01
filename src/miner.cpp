@@ -33,6 +33,8 @@
 #include <algorithm>
 #include <queue>
 #include <utility>
+#include <random>
+#include <unordered_set>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -266,6 +268,25 @@ bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& packa
 
 // ================== Casino Contract ===========================
 
+bool BlockAssembler::GenerateCasinoList(std::vector<int>& winner, uint32_t totalPlayer)
+{
+    auto winnerSize = winner.size();
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, totalPlayer);
+    std::unordered_set<int> randomset;
+
+    uint32_t i=0, k=0;
+    while (i < winnerSize && k++ < winnerSize*100 ) {
+        int randomX = dis(gen);
+        if ( randomset.count(randomX)) continue;
+        randomset.insert(randomX);
+        i++;
+    }
+    return true;
+}
+
+
 bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransaction& coinbaseTx, int& nHeight)
 {
     if (nHeight < 1) return true;
@@ -290,30 +311,16 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         LogPrint(BCLog::BENCH, "CASINOMINER ---  player number next phase %d \n", totalPlayer);
         if (totalPlayer == 0) totalPlayer = CHAIN_PHASE_PLAYER;
 
-        // Lottery game
         auto currentPhase = (nHeight - 1) / CHAIN_PHASE_SIZE;
-        auto seed = currentPhase;
-        std::vector<int> winner(CHAIN_PHASE_PLAYER);
-        for (uint32_t i = 0, j = 0; i < totalPlayer; i++) {
-            srand(seed * CHAIN_PHASE_SIZE + i);
-            auto r = (rand() % 10000) / 10000.0;
-            if (r < CHAIN_PHASE_PLAYER * 1.0 / (i + 1)) {
-                winner[j] = i;
-                j = (j + 1) % CHAIN_PHASE_PLAYER;
-            }
-        }
 
-        srand(seed * CHAIN_PHASE_SIZE + 1);
-        int shift = rand() % totalPlayer;
-        for (uint32_t i = 0; i < CHAIN_PHASE_PLAYER; i++) {
-            winner[i] = (winner[i] + shift) % totalPlayer;
-        }
+        // Lottery game
+        std::vector<int> winner(CHAIN_PHASE_PLAYER, 0);
+        GenerateCasinoList(winner, totalPlayer);
 
         std::string winstr = str64zero.substr(0, 64 - (4 * CHAIN_PHASE_PLAYER));
         for (uint32_t i = 0; i < CHAIN_PHASE_PLAYER; i++) {
             winstr += ConvertUnsignedIntToHexString(winner[i] + 1);
         }
-
 
         // Set next phase winners
         auto datahex = CASINO_SETNEXTWINNERS + str60zero + ConvertUnsignedIntToHexString(currentPhase) + winstr;
@@ -777,8 +784,8 @@ void static YbtcMiner(const CChainParams& chainparams)
 
             } else if (abnormalSkip) {
                 LogPrintf("CASINOMINER ---  nobody mine. I would dig more :( :( : ( :( :) :) :) :) \n");
-                lastWinPhase = currentPhase;
-                lastWinIndex = currentIndex;
+                //lastWinPhase = currentPhase;
+                //lastWinIndex = currentIndex;
                 //sleep 2 seconds to leave forbiden zone
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 // reset abnormal status
@@ -787,7 +794,7 @@ void static YbtcMiner(const CChainParams& chainparams)
             } else if (IsNextMiner(currentPhase, currentIndex, &checkedWinPhase)) {
                 lastWinPhase = currentPhase;
                 lastWinIndex = currentIndex;
-                LogPrintf("CASINOMINER ---  me ******************** \n");
+                LogPrintf("CASINOMINER ---  moneyMe ******************** \n");
                 std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
 
             } else {
