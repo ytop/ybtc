@@ -26,7 +26,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
-#include <pwd.h>
+//#include <pwd.h>
 
 
 // =========== EVM =========

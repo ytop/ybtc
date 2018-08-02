@@ -45,12 +45,13 @@ std::string getDefaultDataDir(std::string _prefix)
 
     boost::filesystem::path dataDirPath;
     char const* homeDir = getenv("HOME");
+/*
     if (!homeDir || strlen(homeDir) == 0) {
         struct passwd* pwd = getpwuid(getuid());
         if (pwd)
             homeDir = pwd->pw_dir;
     }
-
+*/
     if (!homeDir || strlen(homeDir) == 0)
         dataDirPath = boost::filesystem::path("/");
     else
