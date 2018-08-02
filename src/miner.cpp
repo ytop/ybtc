@@ -268,7 +268,7 @@ bool BlockAssembler::TestPackageTransactions(const CTxMemPool::setEntries& packa
 
 // ================== Casino Contract ===========================
 
-bool BlockAssembler::GenerateCasinoList(std::vector<int>& winner, uint32_t totalPlayer)
+bool BlockAssembler::GenerateCasinoList(std::vector<int>& winner, uint32_t totalPlayer, unsigned int seed)
 {
     auto winnerSize = winner.size();
     std::random_device rd;
@@ -276,6 +276,7 @@ bool BlockAssembler::GenerateCasinoList(std::vector<int>& winner, uint32_t total
     std::uniform_int_distribution<> dis(1, totalPlayer);
     std::unordered_set<int> randomset;
 
+    gen.seed(seed);
     uint32_t i=0, k=0;
     while (i < winnerSize && k++ < winnerSize*100 ) {
         int randomX = dis(gen);
@@ -302,7 +303,10 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
     }
 
     // Casino to set next phase winners
-    if (((nHeight - 1) % CHAIN_PHASE_SIZE) == CHAIN_PHASE_SIZE - 1) {
+    if ( nHeight > 2 && ((nHeight - 1) % CHAIN_PHASE_SIZE) == CHAIN_PHASE_SIZE - 1) {
+
+        auto currentPhase = (nHeight - 1) / CHAIN_PHASE_SIZE;
+
         // Get next phase player number
         std::vector<unsigned char> output;
         auto dataTotalPlayer = CASINO_GETTOTALPLAYER;
@@ -311,11 +315,18 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         LogPrint(BCLog::BENCH, "CASINOMINER ---  player number next phase %d \n", totalPlayer);
         if (totalPlayer == 0) totalPlayer = CHAIN_PHASE_PLAYER;
 
-        auto currentPhase = (nHeight - 1) / CHAIN_PHASE_SIZE;
+        // Get next phase seed 
+        std::vector<unsigned char> output_seed;
+        auto prevPhase = currentPhase > 0 ? currentPhase - 1 : 0;
+        auto dataSeed = CASINO_GETWINNERSEED + str60zero + ConvertUnsignedIntToHexString(prevPhase);
+        CallContract(sc::h160(ParseHex(GENESIS_CONTRACT_ADDRESS_ETH)), ParseHex(dataSeed), &output_seed);
+        uint32_t winnerSeed = ConvertHexStringToUnsignedInt(output_seed);
+        LogPrint(BCLog::BENCH, "CASINOMINER ---  seed next phase %d \n", winnerSeed);
+
 
         // Lottery game
         std::vector<int> winner(CHAIN_PHASE_PLAYER, 0);
-        GenerateCasinoList(winner, totalPlayer);
+        GenerateCasinoList(winner, totalPlayer, winnerSeed);
 
         std::string winstr = str64zero.substr(0, 64 - (4 * CHAIN_PHASE_PLAYER));
         for (uint32_t i = 0; i < CHAIN_PHASE_PLAYER; i++) {

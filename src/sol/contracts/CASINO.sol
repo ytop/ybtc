@@ -13,6 +13,7 @@ contract CASINO {
     uint256[MAX_REGISTER] public addresses;
     uint256[MAX_REGISTER] public balances;
     uint256[WINNER_BUFFER_SIZE * CHAIN_PHASE_PLAYER] public winners;
+    uint256[WINNER_BUFFER_SIZE] public winnerSeeds;
 
     constructor() public {
         phaseHeight = 0;
@@ -69,6 +70,7 @@ contract CASINO {
 
         uint256 j = 0;
         uint256 k = 0;
+        uint256 seed = 0;
 
         phaseHeight += 1;
         uint256 phaseIndex = ( phaseHeight % WINNER_BUFFER_SIZE );
@@ -81,12 +83,16 @@ contract CASINO {
             k += 1;
 
             if ( isWinnerId(k, winnerList) ) {
-                winners[ (phaseIndex*CHAIN_PHASE_PLAYER) + j] = i;
+                winners[( phaseIndex * CHAIN_PHASE_PLAYER ) + j] = i;
+                seed = seed ^ ( addresses[i] & 0xffff);
                 j += 1;
-                if ( j >= CHAIN_PHASE_PLAYER ) return true;
-            }
+                if ( j >= CHAIN_PHASE_PLAYER ) {
+                    winnerSeeds[phaseIndex] = seed;
+                    return true;
+                } 
+            }  
         }
-
+        winnerSeeds[phaseIndex] = seed;
         return true;
     }
 
@@ -97,9 +103,9 @@ contract CASINO {
         }
         uint256 usender = uint256(msg.sender);
         for ( uint256 i = 0 ; i < CHAIN_PHASE_PLAYER; ++i ) {
-            win = winners[ (currentPhase % WINNER_BUFFER_SIZE) * 2 + i];
+            win = winners[( currentPhase % WINNER_BUFFER_SIZE ) * 2 + i];
             if ( addresses[win] == usender ) {
-                win++;
+                win = i+1;
                 return win;
             }
         }
@@ -115,6 +121,15 @@ contract CASINO {
             }
         }
         return 0;
+    }
+
+    function getWinnerSeed(uint256 currentPhase) public view returns (uint256) {
+        if (currentPhase > phaseHeight || currentPhase + WINNER_BUFFER_SIZE <= phaseHeight) {
+            return 0;
+        }
+
+        return winnerSeeds[currentPhase % WINNER_BUFFER_SIZE]; 
+
     }
 }
 
