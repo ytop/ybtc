@@ -1,0 +1,12 @@
+
+#!/bin/bash
+set -x
+cd $HOME
+
+rm -fr s2test
+mkdir $HOME/s2test/
+mkdir $HOME/s2test/A
+
+gdb -args ./fabcoind -server -listen -port=15191 -rpcuser=fabcoinrpc -rpcpassword=P0 -rpcport=14191 -datadir=$HOME/s2test/A/  -regtest -pid=$HOME/s2test/A/.pid  -addnode=localhost:15192 -gen 
+
+

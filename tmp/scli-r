@@ -1,0 +1,3 @@
+#set -x 
+
+~/s2/src/fabcoin-cli -regtest -rpcuser=fabcoinrpc -rpcpassword=P0 -rpcconnect=localhost:14191 ${@:1}
