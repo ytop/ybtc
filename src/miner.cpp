@@ -786,8 +786,8 @@ void static YbtcMiner(const CChainParams& chainparams)
                 LogPrintf("\n\nCASINOMINER ---  phase %d tip index %d\n", currentPhase, currentIndex);
             }
 
-            if (currentPhase == 0) {
-                LogPrintf("God is creating Adam and Eve \n");
+            if (currentPhase >= 0) {
+                //LogPrintf("God is creating Adam and Eve \n");
                 minerIndex = CHAIN_PHASE_PLAYER - 1;
                 lastWinPhase = 0;
                 lastWinIndex = minerIndex;
