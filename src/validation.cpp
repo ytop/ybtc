@@ -2138,7 +2138,7 @@ void static UpdateTip(CBlockIndex* pindexNew, const CChainParams& chainParams)
         DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
         GuessVerificationProgress(chainParams.TxData(), chainActive.Tip()), pcoinsTip->DynamicMemoryUsage() * (1.0 / (1 << 20)), pcoinsTip->GetCacheSize());
 */
-    LogPrintf("CASINO: height=%d ", chainActive.Height());
+    LogPrintf("H %d at P %d ", chainActive.Height(), (chainActive.Height()-1)/CHAIN_PHASE_SIZE);
 
     if (!warningMessages.empty())
         LogPrintf(" warning='%s'", boost::algorithm::join(warningMessages, ", "));
