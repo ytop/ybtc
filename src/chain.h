@@ -23,7 +23,7 @@ static const int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
 /**
  * CASINO 
  */
-static const uint32_t CHAIN_PHASE_SIZE = 8;
+static const uint32_t CHAIN_PHASE_SIZE = 200;
 static const uint32_t CHAIN_PHASE_PLAYER = 2;
 static const uint32_t CHAIN_BLOCK_INTERVAL = 1;
 

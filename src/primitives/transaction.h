@@ -332,7 +332,7 @@ public:
 
     bool HasCreateOrCall() const;
 
-    bool HasOpps() const;
+    bool HasOops() const;
 
     bool IsCoinBase() const
     {

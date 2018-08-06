@@ -1092,12 +1092,15 @@ UniValue oops(const JSONRPCRequest& request) {
     wtx.nTimeSmart = GetAdjustedTime();
     CAmount curBalance = pwallet->GetBalance();
 
-    // Build OP_EXEC script
-    CScript scriptPubKey = CScript() << senderAddress << ParseHex(bytecode) << receiverAddress << OP_OOPS;
+    // Build OP_OOPS script
+    CScript senderScript = GetScriptForDestination(senderAddress.Get());;
+    CScript receiverScript = GetScriptForDestination(receiverAddress.Get());;
+    CScript scriptPubKey = CScript() << senderScript << ParseHex(bytecode) << receiverScript << OP_OOPS;
 
     // Create and send the transaction
     CReserveKey reservekey(pwallet);
     CAmount nFeeRequired;
+    CAmount nGasFee = 0;
     std::string strError;
     std::vector<CRecipient> vecSend;
     int nChangePosRet = -1;
@@ -1128,7 +1131,7 @@ UniValue oops(const JSONRPCRequest& request) {
 
     result.push_back(Pair("sender", senderAddress.ToString()));
     result.push_back(Pair("hash160", HexStr(std::vector<unsigned char>(keyid.begin(), keyid.end()))));
-    result.push_back(Pair("address", strAddr));
+    result.push_back(Pair("address", receiverAddress.ToString()));
 
     return result;
 }
@@ -3847,6 +3850,7 @@ static const CRPCCommand commands[] =
     { "wallet",             "callcontract",             &callcontract,             true,   {"contractaddress", "bytecode" }},
     { "wallet",             "getcontractinfo",          &getcontractinfo,          true,   {"contractaddress" }},
     { "wallet",             "sendtocontract",           &sendtocontract,           false,  {"contractaddress", "bytecode", "callerAddr", "gasLimit", "gasPrice", "amount", "receiveraddress"} },
+    { "wallet",             "oops",                     &oops,                     false,  {"receiveraddress", "bytecode", "senderaddress"}},
 };
 
 void RegisterWalletRPCCommands(CRPCTable &t)

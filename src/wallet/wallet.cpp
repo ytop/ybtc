@@ -1556,7 +1556,7 @@ void CWalletTx::GetAmounts(std::list<COutputEntry>& listReceived,
         CTxDestination address;
 
         //TODO-J not check scriptpubkey for contract
-        if ( !txout.scriptPubKey.HasOpps() && !txout.scriptPubKey.HasOpCreate() && !txout.scriptPubKey.HasOpCall() && !ExtractDestination(txout.scriptPubKey, address) && !txout.scriptPubKey.IsUnspendable())
+        if ( !txout.scriptPubKey.HasOpOops() && !txout.scriptPubKey.HasOpCreate() && !txout.scriptPubKey.HasOpCall() && !ExtractDestination(txout.scriptPubKey, address) && !txout.scriptPubKey.IsUnspendable())
         {
             LogPrintf("CWalletTx::GetAmounts: Unknown transaction type found, txid %s\n",
                      this->GetHash().ToString());
