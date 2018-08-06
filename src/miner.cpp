@@ -209,7 +209,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
 
-    LogPrintf("CreateNewBlock(): block weight: %u txs: %u fees: %ld sigops %d\n", GetBlockWeight(*pblock), nBlockTx, nFees, nBlockSigOpsCost);
+    // jyan LogPrintf("CreateNewBlock(): block weight: %u txs: %u fees: %ld sigops %d\n", GetBlockWeight(*pblock), nBlockTx, nFees, nBlockSigOpsCost);
 
     // Fill in header
     pblock->hashPrevBlock = pindexPrev->GetBlockHash();
@@ -224,7 +224,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     }
     int64_t nTime2 = GetTimeMicros();
 
-    LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
+    //jyan LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
 
     return std::move(pblocktemplate);
 }
@@ -312,7 +312,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         auto dataTotalPlayer = CASINO_GETTOTALPLAYER;
         CallContract(sc::h160(ParseHex(GENESIS_CONTRACT_ADDRESS_ETH)), ParseHex(dataTotalPlayer), &output);
         uint32_t totalPlayer = ConvertHexStringToUnsignedInt(output);
-        LogPrint(BCLog::BENCH, "CASINOMINER ---  player number next phase %d \n", totalPlayer);
+        // jyan LogPrint(BCLog::BENCH, "CASINOMINER ---  player number next phase %d \n", totalPlayer);
         if (totalPlayer == 0) totalPlayer = CHAIN_PHASE_PLAYER;
 
         // Get next phase seed 
@@ -321,7 +321,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         auto dataSeed = CASINO_GETWINNERSEED + str60zero + ConvertUnsignedIntToHexString(prevPhase);
         CallContract(sc::h160(ParseHex(GENESIS_CONTRACT_ADDRESS_ETH)), ParseHex(dataSeed), &output_seed);
         uint32_t winnerSeed = ConvertHexStringToUnsignedInt(output_seed);
-        LogPrint(BCLog::BENCH, "CASINOMINER ---  seed next phase %d \n", winnerSeed);
+        // jyan LogPrint(BCLog::BENCH, "CASINOMINER ---  seed next phase %d \n", winnerSeed);
 
 
         // Lottery game
@@ -336,7 +336,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         // Set next phase winners
         auto datahex = CASINO_SETNEXTWINNERS + str60zero + ConvertUnsignedIntToHexString(currentPhase) + winstr;
 
-        LogPrintf("CASINOMINER ---  set winner next phase %s  \n\n", datahex);
+        // jyan LogPrintf("CASINOMINER ---  set winner next phase %s  \n\n", datahex);
         
         scriptPubKey = CScript() << CScriptNum(0) << minerAddress << CScriptNum(60000000) 
             << CScriptNum(25) << ParseHex(datahex) << ParseHex(GENESIS_CONTRACT_ADDRESS_ETH) << OP_CALL;
@@ -636,8 +636,8 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 
 static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainparams)
 {
-    LogPrintf("%s\n", pblock->ToString());
-    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0]->vout[0].nValue));
+    // jyan LogPrintf("%s\n", pblock->ToString());
+    // jyan LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0]->vout[0].nValue));
 
     // Found a solution
     {
@@ -782,9 +782,11 @@ void static YbtcMiner(const CChainParams& chainparams)
                 }
             }
 
+/* jyan
             if (lastInactive != (int)currentIndex) {
                 LogPrintf("\n\nCASINOMINER ---  phase %d tip index %d\n", currentPhase, currentIndex);
             }
+*/
 
             if (currentPhase >= 0) {
                 //LogPrintf("God is creating Adam and Eve \n");
@@ -827,8 +829,8 @@ void static YbtcMiner(const CChainParams& chainparams)
             CBlock* pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("YbtcMiner mining   with %u transactions in block (%u bytes) \n", pblock->vtx.size(),
-                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+            // jyan LogPrintf("YbtcMiner mining   with %u transactions in block (%u bytes) \n", pblock->vtx.size(),
+            // jyan     ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
 
             if (ProcessBlockFound(pblock, chainparams)) {
