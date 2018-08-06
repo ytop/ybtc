@@ -32,6 +32,7 @@ const char* GetTxnOutputType(txnouttype t)
     case TX_WITNESS_V0_SCRIPTHASH: return "witness_v0_scripthash";
     case TX_CREATE: return "create";
     case TX_CALL: return "call";
+    case TX_OOPS: return "oops";
     }
     return nullptr;
 }
@@ -60,6 +61,9 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
         // Call contract tx
         mTemplates.insert(std::make_pair(TX_CALL, CScript() << OP_DATA << OP_ADDRESS << OP_AMOUNT << OP_GAS_LIMIT << OP_GAS_PRICE << OP_DATA << OP_PUBKEYHASH << OP_CALL));
  
+        // Oops tx 
+        mTemplates.insert(std::make_pair(TX_OOPS, CScript() << OP_ADDRESS << OP_DATA << OP_PUBKEYHASH << OP_OOPS));
+
     }
 
     vSolutionsRet.clear();

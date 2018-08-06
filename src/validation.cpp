@@ -644,7 +644,7 @@ static bool AcceptToMemoryPoolWorker(const CChainParams& chainparams, CTxMemPool
             return state.DoS(0, false, REJECT_INSUFFICIENTFEE, "min relay fee not met");
         }
 
-        if (nAbsurdFee && nFees > nAbsurdFee && !tx.HasCreateOrCall())
+        if (nAbsurdFee && nFees > nAbsurdFee && !tx.HasCreateOrCall() && !tx.HasOops())
             return state.Invalid(false,
                 REJECT_HIGHFEE, "absurdly-high-fee",
                 strprintf("%d > %d", nFees, nAbsurdFee));
@@ -1867,7 +1867,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
                 return error("ConnectBlock(): CheckInputs on %s failed with %s",
                     tx.GetHash().ToString(), FormatStateMessage(state));
 
-            if (!tx.HasCreateOrCall()) // skip smart contract script check by TODO-J
+            if (!tx.HasCreateOrCall() && !tx.HasOops()) // skip smart contract script check by TODO-J
                 control.Add(vChecks);
         }
 

@@ -55,6 +55,7 @@ enum txnouttype
     TX_WITNESS_V0_KEYHASH,
     TX_CREATE,
     TX_CALL,
+    TX_OOPS,
 };
 
 class CNoDestination {

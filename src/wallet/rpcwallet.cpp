@@ -713,7 +713,7 @@ UniValue createcontract(const JSONRPCRequest& request) {
 
     senderAddress.SetString(originAddr);
     if (!senderAddress.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Fasc address to send from");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Ybtc address to send from");
 
     // check if sender address has utxo
     CCoinControl coinControl;
@@ -966,7 +966,7 @@ UniValue sendtocontract(const JSONRPCRequest& request) {
     CYbtcAddress senderAddress;
     senderAddress.SetString(callerAddr);
     if (!senderAddress.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Fasc address to send from");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Ybtc address to send from");
 
     // check if sender address has utxo
     CCoinControl coinControl;
@@ -1028,6 +1028,107 @@ UniValue sendtocontract(const JSONRPCRequest& request) {
 
     result.push_back(Pair("sender", senderAddress.ToString()));
     result.push_back(Pair("hash160", HexStr(std::vector<unsigned char>(keyid.begin(), keyid.end()))));
+
+    return result;
+}
+
+UniValue oops(const JSONRPCRequest& request) {
+
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp)) {
+        return NullUniValue;
+    }
+
+    LOCK2(cs_main, pwallet->cs_wallet);
+
+    if (request.fHelp || request.params.size() < 3 || request.params.size() > 3)
+        throw std::runtime_error(
+            "oops"
+            + HelpRequiringPassphrase(pwallet) +
+            "\nArguments:\n"
+            "1. \"receiveaddress\" (string,  required) The ybtc address that will be used to create the contract.\n"
+            "2. \"bytecode\"  (string, required) oops data.\n"
+            "3. \"originaddress\" (string,  required) The ybtc address that own the contract.\n"
+            
+            "\nResult:\n"
+            "[\n"
+            "  {\n"
+            "    \"txid\" : (string) The transaction id.\n"
+            "    \"sender\" : (string) " + CURRENCY_UNIT + " address of the sender.\n"
+            "    \"hash160\" : (string) ripemd-160 hash of the sender.\n"
+            "    \"address\" : (string) expected contract address.\n"
+            "  }\n"
+            "]\n"
+            "\nExamples:\n"
+            + HelpExampleCli("oops", "\"myWH8tdT7Hh5Mq8uUjkyyTWc2bjpdc1RDw\" \"60606040525b33600060006101000a81548173ffffffffffffffffffffffffffffffffffffffff02191690836c010000000000000000000000009081020402179055506103786001600050819055505b600c80605b6000396000f360606040526008565b600256\" \"QM72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\"")
+        );
+  
+
+    std::string receiverAddr = request.params[0].get_str();
+    CYbtcAddress receiverAddress;
+    receiverAddress.SetString(receiverAddr);
+    if (!receiverAddress.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Ybtc address to send from");
+
+
+    std::string bytecode = request.params[1].get_str();
+
+    std::string senderAddr = request.params[2].get_str();
+    CYbtcAddress senderAddress;
+    senderAddress.SetString(senderAddr);
+    if (!senderAddress.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Ybtc address to send from");
+
+    // check if sender address has utxo
+    CCoinControl coinControl;
+    if (!hassenderutxo(senderAddress, coinControl, pwallet)) {
+        throw JSONRPCError(RPC_TYPE_ERROR, "Sender address does not have any unspent outputs");
+    }
+
+    // confirm: gas fee + amount <= balance
+    EnsureWalletIsUnlocked(pwallet);
+
+    CWalletTx wtx;
+    wtx.nTimeSmart = GetAdjustedTime();
+    CAmount curBalance = pwallet->GetBalance();
+
+    // Build OP_EXEC script
+    CScript scriptPubKey = CScript() << senderAddress << ParseHex(bytecode) << receiverAddress << OP_OOPS;
+
+    // Create and send the transaction
+    CReserveKey reservekey(pwallet);
+    CAmount nFeeRequired;
+    std::string strError;
+    std::vector<CRecipient> vecSend;
+    int nChangePosRet = -1;
+    CAmount nAmount = 0;
+    CRecipient recipient = { scriptPubKey, nAmount, false };
+    vecSend.push_back(recipient);
+
+    if (!pwallet->CreateTransaction(vecSend, wtx, reservekey, nFeeRequired, nChangePosRet, strError, coinControl, true, nGasFee, true)) {
+        if (nFeeRequired > pwallet->GetBalance())
+            strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+
+
+    // Commit transaction
+    CValidationState state;
+    if (!pwallet->CommitTransaction(wtx, reservekey, g_connman.get(), state))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of the wallet and coins were spent in the copy but not marked as spent here.");
+
+    // Ouput 
+    UniValue result(UniValue::VOBJ);
+    std::string txId = wtx.GetHash().GetHex();
+    result.push_back(Pair("txid", txId));
+
+    //CYbtcAddress txSenderAdress(txSenderDest);
+    CKeyID keyid;
+    senderAddress.GetKeyID(keyid);
+
+    result.push_back(Pair("sender", senderAddress.ToString()));
+    result.push_back(Pair("hash160", HexStr(std::vector<unsigned char>(keyid.begin(), keyid.end()))));
+    result.push_back(Pair("address", strAddr));
 
     return result;
 }

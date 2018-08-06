@@ -312,7 +312,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         auto dataTotalPlayer = CASINO_GETTOTALPLAYER;
         CallContract(sc::h160(ParseHex(GENESIS_CONTRACT_ADDRESS_ETH)), ParseHex(dataTotalPlayer), &output);
         uint32_t totalPlayer = ConvertHexStringToUnsignedInt(output);
-        // jyan LogPrint(BCLog::BENCH, "CASINOMINER ---  player number next phase %d \n", totalPlayer);
+        LogPrint(BCLog::BENCH, "CASINOMINER ---  player number next phase %d \n", totalPlayer);
         if (totalPlayer == 0) totalPlayer = CHAIN_PHASE_PLAYER;
 
         // Get next phase seed 
@@ -321,7 +321,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         auto dataSeed = CASINO_GETWINNERSEED + str60zero + ConvertUnsignedIntToHexString(prevPhase);
         CallContract(sc::h160(ParseHex(GENESIS_CONTRACT_ADDRESS_ETH)), ParseHex(dataSeed), &output_seed);
         uint32_t winnerSeed = ConvertHexStringToUnsignedInt(output_seed);
-        // jyan LogPrint(BCLog::BENCH, "CASINOMINER ---  seed next phase %d \n", winnerSeed);
+        LogPrint(BCLog::BENCH, "CASINOMINER ---  seed next phase %d \n", winnerSeed);
 
 
         // Lottery game
@@ -336,7 +336,7 @@ bool BlockAssembler::AddCasinoToCoinBaseTx(SmartContract& smct, CMutableTransact
         // Set next phase winners
         auto datahex = CASINO_SETNEXTWINNERS + str60zero + ConvertUnsignedIntToHexString(currentPhase) + winstr;
 
-        // jyan LogPrintf("CASINOMINER ---  set winner next phase %s  \n\n", datahex);
+        LogPrintf("CASINOMINER ---  set winner next phase %s  \n\n", datahex);
         
         scriptPubKey = CScript() << CScriptNum(0) << minerAddress << CScriptNum(60000000) 
             << CScriptNum(25) << ParseHex(datahex) << ParseHex(GENESIS_CONTRACT_ADDRESS_ETH) << OP_CALL;

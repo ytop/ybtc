@@ -150,6 +150,11 @@ isminetype IsMine(const CKeyStore &keystore, const CScript& scriptPubKey, bool& 
         /* TODO-J, no action now */
         break;
     }
+    case TX_OOPS:
+    {
+        /* TODO-J, no action now */
+        break;
+    }
     }
 
     if (keystore.HaveWatchOnly(scriptPubKey)) {

@@ -185,6 +185,9 @@ enum opcodetype
     OP_CREATE = 0xc1,
     OP_CALL = 0xc2,
 
+    // Oops byte code.
+    OP_OOPS = 0xc5,
+
     // template matching params for smart contract
     OP_AMOUNT = 0xf4,
     OP_GAS_PRICE = 0xf5,
@@ -699,6 +702,11 @@ public:
     bool HasOpCall() const
     {
         return Find(OP_CALL) == 1;
+    }
+
+    bool HasOpOops() const
+    {
+        return Find(OP_OOPS) == 1;
     }
 
     void clear()
