@@ -736,7 +736,7 @@ void static YbtcMiner(const CChainParams& chainparams)
     std::mutex m_cs;
 
     // Wait for other processes ready by sleeping
-    std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+    std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
     getMinerAddress();
     LogPrintf("CASINOMINER --- initial miner address is %s\n", HexStr(minerAddress));
 
@@ -793,14 +793,14 @@ void static YbtcMiner(const CChainParams& chainparams)
                 minerIndex = CHAIN_PHASE_PLAYER - 1;
                 lastWinPhase = 0;
                 lastWinIndex = minerIndex;
-                std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+                std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
 
             } else if (abnormalSkip) {
                 LogPrintf("CASINOMINER ---  nobody mine. I would dig more :( :( : ( :( :) :) :) :) \n");
                 //lastWinPhase = currentPhase;
                 //lastWinIndex = currentIndex;
                 //sleep 2 seconds to leave forbiden zone
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));
                 // reset abnormal status
                 abnormalSkip = false;
 
@@ -808,7 +808,7 @@ void static YbtcMiner(const CChainParams& chainparams)
                 lastWinPhase = currentPhase;
                 lastWinIndex = currentIndex;
                 LogPrintf("CASINOMINER ---  moneyMe ******************** \n");
-                std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+                std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
 
             } else {
                 if (lastInactive != (int)currentIndex) {
@@ -816,7 +816,7 @@ void static YbtcMiner(const CChainParams& chainparams)
                     LogPrintf("CASINOMINER --- inactive \n");
                 }
                 // No permission to mine, sleep
-                std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+                std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
                 continue;
             }
 
