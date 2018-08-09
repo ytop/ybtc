@@ -1065,23 +1065,24 @@ UniValue oops(const JSONRPCRequest& request) {
   
 
     std::string receiverAddr = request.params[0].get_str();
-    CYbtcAddress receiverAddress;
-    receiverAddress.SetString(receiverAddr);
-    if (!receiverAddress.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Ybtc address to send from");
-
+    std::vector<unsigned char> receiverAddress(20);
+    if (!base58toVMAddress(receiverAddr, receiverAddress))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Incorrect origin address");
 
     std::string bytecode = request.params[1].get_str();
 
     std::string senderAddr = request.params[2].get_str();
-    CYbtcAddress senderAddress;
-    senderAddress.SetString(senderAddr);
-    if (!senderAddress.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Ybtc address to send from");
+    std::vector<unsigned char> senderAddress(20);
+    base58toVMAddress(senderAddr, senderAddress);
+    if (!base58toVMAddress(senderAddr, senderAddress))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Incorrect origin address");
+
+    CYbtcAddress senderYbtcAddress;
+    senderYbtcAddress.SetString(senderAddr);
 
     // check if sender address has utxo
     CCoinControl coinControl;
-    if (!hassenderutxo(senderAddress, coinControl, pwallet)) {
+    if (!hassenderutxo(senderYbtcAddress, coinControl, pwallet)) {
         throw JSONRPCError(RPC_TYPE_ERROR, "Sender address does not have any unspent outputs");
     }
 
@@ -1090,12 +1091,10 @@ UniValue oops(const JSONRPCRequest& request) {
 
     CWalletTx wtx;
     wtx.nTimeSmart = GetAdjustedTime();
-    CAmount curBalance = pwallet->GetBalance();
+    //CAmount curBalance = pwallet->GetBalance();
 
     // Build OP_OOPS script
-    CScript senderScript = GetScriptForDestination(senderAddress.Get());;
-    CScript receiverScript = GetScriptForDestination(receiverAddress.Get());;
-    CScript scriptPubKey = CScript() << senderScript << ParseHex(bytecode) << receiverScript << OP_OOPS;
+    CScript scriptPubKey = CScript() << senderAddress << ParseHex(bytecode) << receiverAddress << OP_OOPS;
 
     // Create and send the transaction
     CReserveKey reservekey(pwallet);
@@ -1127,11 +1126,10 @@ UniValue oops(const JSONRPCRequest& request) {
 
     //CYbtcAddress txSenderAdress(txSenderDest);
     CKeyID keyid;
-    senderAddress.GetKeyID(keyid);
+    senderYbtcAddress.GetKeyID(keyid);
 
-    result.push_back(Pair("sender", senderAddress.ToString()));
+    result.push_back(Pair("sender", senderYbtcAddress.ToString()));
     result.push_back(Pair("hash160", HexStr(std::vector<unsigned char>(keyid.begin(), keyid.end()))));
-    result.push_back(Pair("address", receiverAddress.ToString()));
 
     return result;
 }
