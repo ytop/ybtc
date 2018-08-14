@@ -156,6 +156,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         pblock->nVersion = gArgs.GetArg("-blockversion", pblock->nVersion);
 
     pblock->nTime = GetAdjustedTime();
+    UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
     const int64_t nMedianTimePast = pindexPrev->GetMedianTimePast();
 
     nLockTimeCutoff = (STANDARD_LOCKTIME_VERIFY_FLAGS & LOCKTIME_MEDIAN_TIME_PAST) ? nMedianTimePast : pblock->GetBlockTime();
@@ -213,7 +214,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
 
     // Fill in header
     pblock->hashPrevBlock = pindexPrev->GetBlockHash();
-    UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
     pblock->nBits = 0;
     pblock->nHeight = nHeight;
     pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(*pblock->vtx[0]);
