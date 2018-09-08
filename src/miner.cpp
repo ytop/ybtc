@@ -156,7 +156,6 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
         pblock->nVersion = gArgs.GetArg("-blockversion", pblock->nVersion);
 
     pblock->nTime = GetAdjustedTime();
-    UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
     const int64_t nMedianTimePast = pindexPrev->GetMedianTimePast();
 
     nLockTimeCutoff = (STANDARD_LOCKTIME_VERIFY_FLAGS & LOCKTIME_MEDIAN_TIME_PAST) ? nMedianTimePast : pblock->GetBlockTime();
@@ -210,10 +209,11 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblocktemplate->vchCoinbaseCommitment = GenerateCoinbaseCommitment(*pblock, pindexPrev, chainparams.GetConsensus());
     pblocktemplate->vTxFees[0] = -nFees;
 
-    LogPrintf("CreateNewBlock(): block weight: %u txs: %u fees: %ld sigops %d\n", GetBlockWeight(*pblock), nBlockTx, nFees, nBlockSigOpsCost);
+    // jyan LogPrintf("CreateNewBlock(): block weight: %u txs: %u fees: %ld sigops %d\n", GetBlockWeight(*pblock), nBlockTx, nFees, nBlockSigOpsCost);
 
     // Fill in header
     pblock->hashPrevBlock = pindexPrev->GetBlockHash();
+    UpdateTime(pblock, chainparams.GetConsensus(), pindexPrev);
     pblock->nBits = 0;
     pblock->nHeight = nHeight;
     pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(*pblock->vtx[0]);
@@ -224,7 +224,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     }
     int64_t nTime2 = GetTimeMicros();
 
-    LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
+    //jyan LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
 
     return std::move(pblocktemplate);
 }
@@ -636,8 +636,8 @@ void IncrementExtraNonce(CBlock* pblock, const CBlockIndex* pindexPrev, unsigned
 
 static bool ProcessBlockFound(const CBlock* pblock, const CChainParams& chainparams)
 {
-    LogPrintf("%s\n", pblock->ToString());
-    LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0]->vout[0].nValue));
+    // jyan LogPrintf("%s\n", pblock->ToString());
+    // jyan LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0]->vout[0].nValue));
 
     // Found a solution
     {
@@ -736,7 +736,7 @@ void static YbtcMiner(const CChainParams& chainparams)
     std::mutex m_cs;
 
     // Wait for other processes ready by sleeping
-    std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+    std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
     getMinerAddress();
     LogPrintf("CASINOMINER --- initial miner address is %s\n", HexStr(minerAddress));
 
@@ -782,23 +782,25 @@ void static YbtcMiner(const CChainParams& chainparams)
                 }
             }
 
+/* jyan
             if (lastInactive != (int)currentIndex) {
                 LogPrintf("\n\nCASINOMINER ---  phase %d tip index %d\n", currentPhase, currentIndex);
             }
+*/
 
-            if (currentPhase == 0) {
-                LogPrintf("God is creating Adam and Eve \n");
+            if (currentPhase >= 0) {
+                //LogPrintf("God is creating Adam and Eve \n");
                 minerIndex = CHAIN_PHASE_PLAYER - 1;
                 lastWinPhase = 0;
                 lastWinIndex = minerIndex;
-                std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+                std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
 
             } else if (abnormalSkip) {
                 LogPrintf("CASINOMINER ---  nobody mine. I would dig more :( :( : ( :( :) :) :) :) \n");
                 //lastWinPhase = currentPhase;
                 //lastWinIndex = currentIndex;
                 //sleep 2 seconds to leave forbiden zone
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::this_thread::sleep_for(std::chrono::milliseconds(2));
                 // reset abnormal status
                 abnormalSkip = false;
 
@@ -806,7 +808,7 @@ void static YbtcMiner(const CChainParams& chainparams)
                 lastWinPhase = currentPhase;
                 lastWinIndex = currentIndex;
                 LogPrintf("CASINOMINER ---  moneyMe ******************** \n");
-                std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+                std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
 
             } else {
                 if (lastInactive != (int)currentIndex) {
@@ -814,7 +816,7 @@ void static YbtcMiner(const CChainParams& chainparams)
                     LogPrintf("CASINOMINER --- inactive \n");
                 }
                 // No permission to mine, sleep
-                std::this_thread::sleep_for(std::chrono::seconds(CHAIN_BLOCK_INTERVAL));
+                std::this_thread::sleep_for(std::chrono::milliseconds(CHAIN_BLOCK_INTERVAL));
                 continue;
             }
 
@@ -827,8 +829,8 @@ void static YbtcMiner(const CChainParams& chainparams)
             CBlock* pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("YbtcMiner mining   with %u transactions in block (%u bytes) \n", pblock->vtx.size(),
-                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
+            // jyan LogPrintf("YbtcMiner mining   with %u transactions in block (%u bytes) \n", pblock->vtx.size(),
+            // jyan     ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
 
             if (ProcessBlockFound(pblock, chainparams)) {

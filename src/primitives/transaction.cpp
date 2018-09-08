@@ -122,3 +122,12 @@ bool CTransaction::HasCreateOrCall() const {
     }   
     return false;
 }
+
+bool CTransaction::HasOops() const {
+    for(const CTxOut& v : vout){
+        if(v.scriptPubKey.HasOpOops()){
+            return true;
+        }   
+    }   
+    return false;
+}

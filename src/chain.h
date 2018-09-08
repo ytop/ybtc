@@ -23,9 +23,9 @@ static const int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
 /**
  * CASINO 
  */
-static const uint32_t CHAIN_PHASE_SIZE = 8;
+static const uint32_t CHAIN_PHASE_SIZE = 256;
 static const uint32_t CHAIN_PHASE_PLAYER = 2;
-static const uint32_t CHAIN_BLOCK_INTERVAL = 2;
+static const uint32_t CHAIN_BLOCK_INTERVAL = 666; // 666  milliseconds
 
 // static const std::string GENESIS_CONTRACT_ADDRESS_BTC="13vCd93ALeZMrRtm8Rnv4WuixKA7opUWV2";
 static const std::string GENESIS_CONTRACT_ADDRESS_BTC="miS9vC899fzcdYNNqzmHtS83pJkphxAvYZ";

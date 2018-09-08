@@ -662,9 +662,11 @@ void CBlockPolicyEstimator::processBlock(unsigned int nBlockHeight,
     }
 
 
+/* jyan
     LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy estimates updated by %u of %u block txs, since last block %u of %u tracked, mempool map size %u, max target %u from %s\n",
              countedTxs, entries.size(), trackedTxs, trackedTxs + untrackedTxs, mapMemPoolTxs.size(),
              MaxUsableEstimate(), HistoricalBlockSpan() > BlockSpan() ? "historical" : "current");
+*/
 
     trackedTxs = 0;
     untrackedTxs = 0;

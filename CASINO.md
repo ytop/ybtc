@@ -21,6 +21,7 @@ Each phase has (P) blocks. There are (N) winners in one phase. P can be divided 
 
 N winners mine blocks with assigned sequence.
 
+These dependencies are required:
 
  Net         | P        | N
  ------------|------------------|----------------------

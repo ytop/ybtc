@@ -143,6 +143,9 @@ const char* GetOpName(opcodetype opcode)
     case OP_CREATE                 : return "OP_CREATE";
     case OP_CALL                   : return "OP_CALL";
 
+    // byte code execution
+    case OP_OOPS                   : return "OP_OOPS";
+
     case OP_INVALIDOPCODE          : return "OP_INVALIDOPCODE";
 
     // Note:
