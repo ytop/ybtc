@@ -130,7 +130,7 @@ void BlockAssembler::RebuildRefundTransaction(const std::vector<CTxOut>& vRefund
 
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& scriptPubKeyIn, bool fMineWitnessTx)
 {
-    int64_t nTimeStart = GetTimeMicros();
+    //int64_t nTimeStart = GetTimeMicros();
 
     resetBlock();
 
@@ -196,7 +196,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblock->hashStateRoot = uint256(sc::h256Touint(sc::h256(pState->rootHash())));
     pState->setRoot(oldHashStateRoot);
 
-    int64_t nTime1 = GetTimeMicros();
+    //int64_t nTime1 = GetTimeMicros();
 
     nLastBlockTx = nBlockTx;
     nLastBlockWeight = nBlockWeight;
@@ -222,7 +222,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     if (!TestBlockValidity(state, chainparams, *pblock, pindexPrev, false, false)) {
         throw std::runtime_error(strprintf("%s: TestBlockValidity failed: %s", __func__, FormatStateMessage(state)));
     }
-    int64_t nTime2 = GetTimeMicros();
+    //int64_t nTime2 = GetTimeMicros();
 
     //jyan LogPrint(BCLog::BENCH, "CreateNewBlock() packages: %.2fms (%d packages, %d updated descendants), validity: %.2fms (total %.2fms)\n", 0.001 * (nTime1 - nTimeStart), nPackagesSelected, nDescendantsUpdated, 0.001 * (nTime2 - nTime1), 0.001 * (nTime2 - nTimeStart));
 
