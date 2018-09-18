@@ -1,0 +1,4 @@
+#!/bin/bash
+#set -x 
+
+../src/ybc -rpcuser=ybtc -rpcpassword=ybtc -rpcport=8881 ${@:1}
