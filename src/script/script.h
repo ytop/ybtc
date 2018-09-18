@@ -180,6 +180,8 @@ enum opcodetype
     OP_NOP8 = 0xb7,
     OP_NOP9 = 0xb8,
     OP_NOP10 = 0xb9,
+    OP_SMARTCODE = 0xba,
+    OP_SMARTCODEVERIFY = 0xbb,
 
     // Execute EXT byte code.
     OP_CREATE = 0xc1,

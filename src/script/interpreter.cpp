@@ -1023,6 +1023,114 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                 }
                 break;
 
+                case OP_SMARTCODE:
+                case OP_SMARTCODEVERIFY:
+                {
+                    // ([sig ...] num_of_signatures [pubkey ...] num_of_pubkeys -- bool)
+
+                    int i = 1;
+                    if ((int)stack.size() < i)
+                        return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                    int nKeysCount = CScriptNum(stacktop(-i), fRequireMinimal).getint();
+                    if (nKeysCount < 0 || nKeysCount > MAX_PUBKEYS_PER_MULTISIG)
+                        return set_error(serror, SCRIPT_ERR_PUBKEY_COUNT);
+                    nOpCount += nKeysCount;
+                    if (nOpCount > MAX_OPS_PER_SCRIPT)
+                        return set_error(serror, SCRIPT_ERR_OP_COUNT);
+                    int ikey = ++i;
+                    // ikey2 is the position of last non-signature item in the stack. Top stack item = 1.
+                    // With SCRIPT_VERIFY_NULLFAIL, this is used for cleanup if operation fails.
+                    int ikey2 = nKeysCount + 2;
+                    i += nKeysCount;
+                    if ((int)stack.size() < i)
+                        return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                    int nSigsCount = CScriptNum(stacktop(-i), fRequireMinimal).getint();
+                    if (nSigsCount < 0 || nSigsCount > nKeysCount)
+                        return set_error(serror, SCRIPT_ERR_SIG_COUNT);
+                    int isig = ++i;
+                    i += nSigsCount;
+                    if ((int)stack.size() < i)
+                        return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+
+                    // Subset of script starting at the most recent codeseparator
+                    CScript scriptCode(pbegincodehash, pend);
+
+                    // Drop the signature in pre-segwit scripts but not segwit scripts
+                    for (int k = 0; k < nSigsCount; k++)
+                    {
+                        valtype& vchSig = stacktop(-isig-k);
+                        if (sigversion == SIGVERSION_BASE) {
+                            scriptCode.FindAndDelete(CScript(vchSig));
+                        }
+                    }
+
+                    bool fSuccess = true;
+                    while (fSuccess && nSigsCount > 0)
+                    {
+                        valtype& vchSig    = stacktop(-isig);
+                        valtype& vchPubKey = stacktop(-ikey);
+
+                        // Note how this makes the exact order of pubkey/signature evaluation
+                        // distinguishable by CHECKMULTISIG NOT if the STRICTENC flag is set.
+                        // See the script_(in)valid tests for details.
+                        if (!CheckSignatureEncoding(vchSig, flags, serror) || !CheckPubKeyEncoding(vchPubKey, flags, sigversion, serror)) {
+                            // serror is set
+                            return false;
+                        }
+
+                        // Check signature
+                        bool fOk = checker.CheckSig(vchSig, vchPubKey, scriptCode, sigversion);
+
+                        if (fOk) {
+                            isig++;
+                            nSigsCount--;
+                        }
+                        ikey++;
+                        nKeysCount--;
+
+                        // If there are more signatures left than keys left,
+                        // then too many signatures have failed. Exit early,
+                        // without checking any further signatures.
+                        if (nSigsCount > nKeysCount)
+                            fSuccess = false;
+                    }
+
+                    // Clean up stack of actual arguments
+                    while (i-- > 1) {
+                        // If the operation failed, we require that all signatures must be empty vector
+                        if (!fSuccess && (flags & SCRIPT_VERIFY_NULLFAIL) && !ikey2 && stacktop(-1).size())
+                            return set_error(serror, SCRIPT_ERR_SIG_NULLFAIL);
+                        if (ikey2 > 0)
+                            ikey2--;
+                        popstack(stack);
+                    }
+
+                    // A bug causes CHECKMULTISIG to consume one extra argument
+                    // whose contents were not checked in any way.
+                    //
+                    // Unfortunately this is a potential source of mutability,
+                    // so optionally verify it is exactly equal to zero prior
+                    // to removing it from the stack.
+                    if (stack.size() < 1)
+                        return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+                    if ((flags & SCRIPT_VERIFY_NULLDUMMY) && stacktop(-1).size())
+                        return set_error(serror, SCRIPT_ERR_SIG_NULLDUMMY);
+                    popstack(stack);
+
+                    stack.push_back(fSuccess ? vchTrue : vchFalse);
+
+                    if (opcode == OP_SMARTCODEVERIFY)
+                    {
+                        if (fSuccess)
+                            popstack(stack);
+                        else
+                            return set_error(serror, SCRIPT_ERR_CHECKMULTISIGVERIFY);
+                    }
+                }
+                break;
+
                 case OP_CREATE:
                 case OP_CALL:
                 {

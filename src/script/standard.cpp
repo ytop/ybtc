@@ -27,6 +27,7 @@ const char* GetTxnOutputType(txnouttype t)
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
     case TX_MULTISIG: return "multisig";
+    case TX_SMARTCODE: return "smartcode";
     case TX_NULL_DATA: return "nulldata";
     case TX_WITNESS_V0_KEYHASH: return "witness_v0_keyhash";
     case TX_WITNESS_V0_SCRIPTHASH: return "witness_v0_scripthash";
@@ -54,6 +55,9 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
 
         // Sender provides N pubkeys, receivers provides M signatures
         mTemplates.insert(std::make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
+
+        // Sender provides N pubkeys, receivers provides M signatures with weights
+        mTemplates.insert(std::make_pair(TX_SMARTCODE, CScript() << OP_DATA << OP_PUBKEYS << OP_SMARTCODE));
 
         // Contract creation tx 
         mTemplates.insert(std::make_pair(TX_CREATE, CScript() << OP_ADDRESS << OP_GAS_LIMIT << OP_GAS_PRICE << OP_DATA << OP_PUBKEYHASH << OP_CREATE));
@@ -130,6 +134,10 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<std::v
                     unsigned char n = vSolutionsRet.back()[0];
                     if (m < 1 || n < 1 || m > n || vSolutionsRet.size()-2 != n)
                         return false;
+                }
+                else if (typeRet == TX_SMARTCODE)
+                {
+                // jyan
                 }
                 return true;
             }
@@ -282,6 +290,10 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::
         if (addressRet.empty())
             return false;
     }
+    else if (typeRet == TX_SMARTCODE)
+    {
+    // jyan
+    }
     else
     {
         nRequiredRet = 1;
@@ -343,6 +355,17 @@ CScript GetScriptForMultisig(int nRequired, const std::vector<CPubKey>& keys)
     for (const CPubKey& key : keys)
         script << ToByteVector(key);
     script << CScript::EncodeOP_N(keys.size()) << OP_CHECKMULTISIG;
+    return script;
+}
+
+CScript GetScriptForSmartCode(int nRequired, const std::vector<CPubKey>& keys)
+{
+    CScript script;
+
+    script << CScript::EncodeOP_N(nRequired);
+    for (const CPubKey& key : keys)
+        script << ToByteVector(key);
+    script << CScript::EncodeOP_N(keys.size()) << OP_SMARTCODE;
     return script;
 }
 
